@@ -1,0 +1,186 @@
+﻿@page
+@using DockerApiViewer.Pages
+@model DockerApiViewer.Pages.IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+@section Scripts
+    {
+    <script>
+        var urlBase = "http://localhost:8000";
+
+        function ajaxCall(tgtDiv, loaderDiv, urlSegment) {
+            console.log(tgtDiv, loaderDiv, urlSegment);
+            $("#" + tgtDiv).text("");
+            $("#" + loaderDiv).show();
+            var surl = urlBase + urlSegment;
+            $.ajax({
+                type: "GET",
+                url: surl,
+                crossDomain: "true",
+                cache: false,
+                withCredentials: false,
+                success: function (responseData, textStatus, jqXHR) {
+                    $("#" + loaderDiv).hide();
+                    var contentType = jqXHR.getResponseHeader("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        if (Array.isArray(responseData)) {
+                            var output = '<ul>';
+                            $.each(responseData,
+                                function (idx, item) {
+                                    output += "<li>" + item.firstname + " " + item.lastname + "</il>";
+                                });
+                            output += "</ul>";
+                            $("#" + tgtDiv).html(output);
+                        } else {
+                            var output = '';
+                            output += "ID: " + responseData.id + "<br />";
+                            output += "First Name: " + responseData.firstname + "<br />";
+                            output += "Last Name: " + responseData.lastname + "<br />";
+                            $("#" + tgtDiv).html(output);
+                        }
+                    } else {
+                        $("#" + tgtDiv).text(responseData);
+                    }
+                },
+                error: function (responseData, textStatus, errorThrown) {
+                    $("#" + loaderDiv).hide();
+                    if (typeof responseData.responseText != "undefined" && responseData.responseText !== '') {
+                        $("#" + tgtDiv).html("<img src='https://httpstatusdogs.com/img/" +
+                            responseData.status +
+                            ".jpg'/>");
+                    } else {
+                        //$("#" + tgtDiv).text("api error");
+                        $("#" + tgtDiv).html("<img src='https://httpstatusdogs.com/img/" +
+                            responseData.status +
+                            ".jpg'/>");
+                    }
+                }
+            });
+        }
+
+
+        var methods = ['/people', '/people/1000', '/slowproc/100', '/throw', '/people/9', '/slowproc/200', '/people/30', '/people/100'];
+
+        function load1() {
+            ajaxCall("target1", "LoadingImage1", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load2() {
+            ajaxCall("target2", "LoadingImage2", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load3() {
+            ajaxCall("target3", "LoadingImage3", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load4() {
+            ajaxCall("target4", "LoadingImage4", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load5() {
+            ajaxCall("target5", "LoadingImage5", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load6() {
+            ajaxCall("target6", "LoadingImage6", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load7() {
+            ajaxCall("target7", "LoadingImage7", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load8() {
+            ajaxCall("target8", "LoadingImage8", methods[Math.floor(Math.random() * methods.length)]);
+        }
+        function load9() {
+            ajaxCall("target9", "LoadingImage9", methods[Math.floor(Math.random() * methods.length)]);
+        }
+
+        window.onload = function () {
+            setInterval(load1, 5000);
+            setInterval(load2, 6000);
+            setInterval(load3, 7000);
+            setInterval(load4, 5100);
+            setInterval(load5, 6100);
+            setInterval(load6, 7100);
+            setInterval(load7, 5200);
+            setInterval(load8, 6300);
+            setInterval(load9, 7400);
+        }
+
+    </script>
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage1" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target1" class="targetDiv"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage2" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target2" class="targetDiv"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage3" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target3" class="targetDiv"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage4" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target4" class="targetDiv"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage5" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target5" class="targetDiv"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage6" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target6" class="targetDiv"></div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage7" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target7" class="targetDiv"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage8" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target8" class="targetDiv"></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="well">
+            <div id="LoadingImage9" class="mx-auto text-center" style="display: none">
+                <img src="~/images/ajax-loader_sm.gif" />
+            </div>
+            <div id="target9" class="targetDiv"></div>
+        </div>
+    </div>
+</div>

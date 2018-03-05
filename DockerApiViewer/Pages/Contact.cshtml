@@ -1,0 +1,97 @@
+﻿@page
+@using DockerApiViewer.Pages
+@model DockerApiViewer.Pages.ContactModel
+@{
+    ViewData["Title"] = "Contact";
+}
+@section Scripts
+    {
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script>
+
+        $(function () {
+            "use strict";
+            $.widget('test.pauser', {
+
+                options: {
+                },
+
+                _create: function () {
+                    var $this = this;
+                    $this.index = 0;
+                    $this.max = 5;
+                    $this._start();
+                    $("#msg").append("timer");
+                },
+
+                _setIntervalWithContext: function (code, delay, context) {
+                    return setInterval(function () {
+                        code.call(context);
+                    }, delay);
+                },
+
+                _doTimer: function () {
+                    var $this = this, i;
+                    $("#msg").append("timer");
+                    ++$this.index;
+                    if ($this.index >= $this.max) {
+                        $this.index = 0;
+                    }
+                    for (i = 0; i < $this.index; i++) {
+                        $("#msg").append(".");
+                    }
+                },
+
+                _start: function () {
+                    var $this = this;
+                    $this.interval = $this._setIntervalWithContext(function () {
+                        $this._doTimer();
+                    }, 1000, $this);
+                },
+
+                pause: function () {
+                    var $this = this;
+                    $("#msg").append("pause!");
+                    $("#pause").hide();
+                    $("#resume").show();
+                    clearInterval($this.interval);
+
+                },
+
+                resume: function () {
+                    var $this = this;
+                    $("#msg").append("resume!");
+                    $("#pause").show();
+                    $("#resume").hide();
+                    $this._start();
+                }
+
+            });
+
+        });
+
+        $(function () {
+            $("#resume").hide();
+
+            $("#msg").pauser();
+
+            $("#pause").click(function () {
+                $("#msg").pauser("pause");
+            });
+
+            $("#resume").click(function () {
+                $("#msg").pauser("resume");
+            });
+        });
+
+    </script>
+
+}
+
+<a href="#" id="pause">pause</a>&nbsp;&nbsp;<a href="#" id="resume">resume</a>
+<div id="msg">
+</div>
+

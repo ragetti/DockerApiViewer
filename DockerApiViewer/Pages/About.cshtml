@@ -1,0 +1,259 @@
+﻿@page
+@using DockerApiViewer.Pages
+@model DockerApiViewer.Pages.IndexModel
+@{
+    ViewData["Title"] = "About page";
+    //https://code.tutsplus.com/tutorials/making-use-of-jquery-uis-widget-factory--net-29606
+}
+
+
+@section Scripts
+    {
+    <style>
+        .custom-apidisplay {
+            height: 250px;
+        }
+
+        .custom-colorize-changer {
+            font-size: 10px;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <script>
+        $(function () {
+            "use strict";
+            $.widget("hwh.apidisplay",
+                {
+                    options: {
+                        baseUrl: "http://localhost:8000",
+                        reloadMs: 3000,
+                        //callBacks
+                        change: null
+                    },
+
+                    //the constructor
+                    _create: function () {
+                        var $this = this;
+                        $this.element
+                            //add class for theming
+                            .addClass("custom-apidisplay");
+
+                        $this._loader = $('<img src="/images/ajax-loader_sm.gif"/>')
+                            .appendTo(this.element).hide();
+                        $this._target = $('<div>fred</div>')
+                            .appendTo(this.element);
+                        $this._refresh();
+                    },
+
+                    _doTimer: function () {
+                        var $this = this;
+                        var dt = new Date();
+                        var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+                        $this._target.text(time);
+                    },
+
+                    _refresh: function () {
+                        var $this = this;
+                        $this.interval = $this._setIntervalWithContext(function () {
+                            $this._doTimer();
+                        }, $this.options.reloadMs, $this);
+                    },
+
+                    _setIntervalWithContext: function (code, delay, context) {
+                        return setInterval(function () {
+                            code.call(context);
+                        }, delay);
+                    },
+
+/*                    _refresh: function() {
+                            $.ajax({
+                                type: "GET",
+                                url: surl,
+                                crossDomain: "true",
+                                cache: false,
+                                withCredentials: false,
+                                success: function(responseData) {
+
+                                }
+
+
+                            });
+                        }*/
+                        _destroy: function () { },
+
+
+                    _setOption: function (key, value) { }
+                });
+        });
+
+
+        /**
+         * ***********************************
+         */
+
+        var urlBase = "http://localhost:8000";
+
+        function ajaxCall(tgtDiv, loaderDiv, urlSegment) {
+            console.log(tgtDiv, loaderDiv, urlSegment);
+            $("#" + tgtDiv).text("");
+            $("#" + loaderDiv).show();
+            var surl = urlBase + urlSegment;
+            $.ajax({
+                type: "GET",
+                url: surl,
+                crossDomain: "true",
+                cache: false,
+                withCredentials: false,
+                success: function (responseData, textStatus, jqXHR) {
+                    $("#" + loaderDiv).hide();
+                    var contentType = jqXHR.getResponseHeader("content-type");
+                    if (contentType && contentType.indexOf("application/json") !== -1) {
+                        if (Array.isArray(responseData)) {
+                            var output = '<ul>';
+                            $.each(responseData,
+                                function (idx, item) {
+                                    output += "<li>" + item.firstname + " " + item.lastname + "</il>";
+                                });
+                            output += "</ul>";
+                            $("#" + tgtDiv).html(output);
+                        } else {
+                            var output = '';
+                            output += "ID: " + responseData.id + "<br />";
+                            output += "First Name: " + responseData.firstname + "<br />";
+                            output += "Last Name: " + responseData.lastname + "<br />";
+                            $("#" + tgtDiv).html(output);
+                        }
+                    } else {
+                        $("#" + tgtDiv).text(responseData);
+                    }
+                },
+                error: function (responseData, textStatus, errorThrown) {
+                    $("#" + loaderDiv).hide();
+                    if (typeof responseData.responseText != "undefined" && responseData.responseText !== '') {
+                        $("#" + tgtDiv).html("<img src='https://httpstatusdogs.com/img/" +
+                            responseData.status +
+                            ".jpg'/>");
+                    } else {
+                        //$("#" + tgtDiv).text("api error");
+                        $("#" + tgtDiv).html("<img src='https://httpstatusdogs.com/img/" +
+                            responseData.status +
+                            ".jpg'/>");
+                    }
+                }
+            });
+        }
+
+
+        var methods = ['/people', '/people/1000', '/slowproc/100', '/throw', '/people/9', '/slowproc/200', '/people/30', '/people/100'];
+
+        function load1() {
+            ajaxCall("target1", "LoadingImage1", methods[Math.floor(Math.random() * methods.length)]);
+        }
+
+
+        window.onload = function () {
+            //setInterval(load1, 5000);
+        }
+
+        $(document).ready(function () {
+            // Initialize with default options
+            $("#my-widget1").apidisplay();
+        });
+
+    </script>
+}
+<div class="row">
+    <div class="col-md-4">
+        <div class="well">
+            <div id="my-widget1"></div>
+        </div>
+    </div>
+</div>
+
+@*
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage1" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target1" class="targetDiv"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage2" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target2" class="targetDiv"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage3" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target3" class="targetDiv"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage4" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target4" class="targetDiv"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage5" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target5" class="targetDiv"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage6" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target6" class="targetDiv"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage7" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target7" class="targetDiv"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage8" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target8" class="targetDiv"></div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="well">
+                <div id="LoadingImage9" class="mx-auto text-center" style="display: none">
+                    <img src="~/images/ajax-loader_sm.gif" />
+                </div>
+                <div id="target9" class="targetDiv"></div>
+            </div>
+        </div>
+    </div>
+*@
